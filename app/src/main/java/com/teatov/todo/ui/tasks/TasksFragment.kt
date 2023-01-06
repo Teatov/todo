@@ -46,7 +46,7 @@ class TasksFragment : Fragment(R.layout.fragment_tasks) {
         val searchView = searchItem.actionView as SearchView
 
         searchView.onQueryTextChanged {
-            //update search query
+            viewModel.searchQuery.value = it
         }
     }
 
