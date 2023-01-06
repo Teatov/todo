@@ -1,7 +1,7 @@
 package com.teatov.todo.ui
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
 import com.teatov.todo.R
 import dagger.hilt.android.AndroidEntryPoint
 
