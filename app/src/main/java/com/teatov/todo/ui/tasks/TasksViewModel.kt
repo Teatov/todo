@@ -21,8 +21,7 @@ class TasksViewModel @ViewModelInject constructor(
 
     val preferencesFlow = preferencesManager.preferencesFlow
 
-    private val tasksFlow = combine(searchQuery,preferencesFlow) {
-        query, filterPreferences ->
+    private val tasksFlow = combine(searchQuery, preferencesFlow) { query, filterPreferences ->
         Pair(query, filterPreferences)
     }.flatMapLatest { (query, filterPreferences) ->
         taskDao.getTasks(query, filterPreferences.sortOrder, filterPreferences.hideCompleted)

@@ -55,14 +55,14 @@ class TasksFragment : Fragment(R.layout.fragment_tasks) {
             viewModel.searchQuery.value = it
         }
 
-        viewLifecycleOwner.lifecycleScope.launch{
+        viewLifecycleOwner.lifecycleScope.launch {
             menu.findItem(R.id.action_hide_completed_tasks).isChecked =
                 viewModel.preferencesFlow.first().hideCompleted
         }
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when(item.itemId) {
+        return when (item.itemId) {
             R.id.action_sort_by_name -> {
                 viewModel.onSortOrderSelected(SortOrder.BY_NAME)
                 true
