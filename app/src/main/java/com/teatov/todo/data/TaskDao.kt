@@ -1,7 +1,6 @@
 package com.teatov.todo.data
 
 import androidx.room.*
-import com.teatov.todo.ui.tasks.SortOrder
 import kotlinx.coroutines.flow.Flow
 
 @Dao
