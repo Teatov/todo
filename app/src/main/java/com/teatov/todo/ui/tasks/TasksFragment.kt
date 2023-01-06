@@ -7,6 +7,7 @@ import android.view.MenuItem
 import android.view.View
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -44,7 +45,8 @@ class TasksFragment : Fragment(R.layout.fragment_tasks), TasksAdapter.OnItemClic
                 setHasFixedSize(true)
             }
 
-            ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT) {
+            ItemTouchHelper(object :
+                ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT) {
                 override fun onMove(
                     recyclerView: RecyclerView,
                     viewHolder: RecyclerView.ViewHolder,
@@ -60,9 +62,14 @@ class TasksFragment : Fragment(R.layout.fragment_tasks), TasksAdapter.OnItemClic
                 }
             }).attachToRecyclerView(recyclerViewTasks)
 
-            fabAddTask.setOnClickListener{
+            fabAddTask.setOnClickListener {
                 viewModel.onAddNewTaskClick()
             }
+        }
+
+        setFragmentResultListener("add_edit_request") { _, bundle ->
+            val result = bundle.getInt("add_edit_result")
+            viewModel.onAddEditResult(result)
         }
 
         viewModel.tasks.observe(viewLifecycleOwner) {
@@ -71,7 +78,7 @@ class TasksFragment : Fragment(R.layout.fragment_tasks), TasksAdapter.OnItemClic
 
         viewLifecycleOwner.lifecycleScope.launchWhenStarted {
             viewModel.tasksEvent.collect { event ->
-                when(event) {
+                when (event) {
                     is TasksViewModel.TasksEvent.ShowUndoDeleteTaskMessage -> {
                         Snackbar.make(requireView(), "Task deleted", Snackbar.LENGTH_LONG)
                             .setAction("UNDO") {
@@ -79,12 +86,23 @@ class TasksFragment : Fragment(R.layout.fragment_tasks), TasksAdapter.OnItemClic
                             }.show()
                     }
                     is TasksViewModel.TasksEvent.NavigateToAddTaskScreen -> {
-                        val action = TasksFragmentDirections.actionTasksFragmentToAddEditTaskFragment(null, "New task")
+                        val action =
+                            TasksFragmentDirections.actionTasksFragmentToAddEditTaskFragment(
+                                null,
+                                "New task"
+                            )
                         findNavController().navigate(action)
                     }
                     is TasksViewModel.TasksEvent.NavigateToEditTaskScreen -> {
-                        val action = TasksFragmentDirections.actionTasksFragmentToAddEditTaskFragment(event.task, "Edit task")
+                        val action =
+                            TasksFragmentDirections.actionTasksFragmentToAddEditTaskFragment(
+                                event.task,
+                                "Edit task"
+                            )
                         findNavController().navigate(action)
+                    }
+                    is TasksViewModel.TasksEvent.ShowTaskSavedConfirmationMessage -> {
+                        Snackbar.make(requireView(), event.msg, Snackbar.LENGTH_SHORT).show()
                     }
                 }.exhaustive
             }
