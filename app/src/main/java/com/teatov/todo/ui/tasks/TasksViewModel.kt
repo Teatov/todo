@@ -8,9 +8,11 @@ import com.teatov.todo.data.PreferencesManager
 import com.teatov.todo.data.SortOrder
 import com.teatov.todo.data.Task
 import com.teatov.todo.data.TaskDao
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 
 
@@ -21,6 +23,9 @@ class TasksViewModel @ViewModelInject constructor(
     val searchQuery = MutableStateFlow("")
 
     val preferencesFlow = preferencesManager.preferencesFlow
+
+    private val tasksEventChannel = Channel<TasksEvent>()
+    val tasksEvent = tasksEventChannel.receiveAsFlow()
 
     private val tasksFlow = combine(searchQuery, preferencesFlow) { query, filterPreferences ->
         Pair(query, filterPreferences)
@@ -48,6 +53,18 @@ class TasksViewModel @ViewModelInject constructor(
 
     fun onTaskSwiped(task: Task) = viewModelScope.launch {
         taskDao.delete(task)
+
+        tasksEventChannel.send(TasksEvent.ShowUndoDeleteTaskMessage(task))
+    }
+
+    fun onUndoDeleteClick (task: Task) = viewModelScope.launch {
+        taskDao.insert(task)
+    }
+
+    sealed class TasksEvent {
+        data class ShowUndoDeleteTaskMessage(val task: Task) : TasksEvent() {
+
+        }
     }
 }
 
