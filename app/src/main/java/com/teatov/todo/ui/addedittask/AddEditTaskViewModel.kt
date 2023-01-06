@@ -59,7 +59,7 @@ class AddEditTaskViewModel @ViewModelInject constructor(
         addEditTaskEventChannel.send(AddEditTaskEvent.NavigateBackWithResult(EDIT_TASK_RESULT_OK))
     }
 
-    private fun showInvalidInputMessage(text:String) = viewModelScope.launch {
+    private fun showInvalidInputMessage(text: String) = viewModelScope.launch {
         addEditTaskEventChannel.send(AddEditTaskEvent.ShowInvalidInputMessage(text))
     }
 

@@ -10,7 +10,6 @@ import com.teatov.todo.data.TaskDao
 import com.teatov.todo.ui.ADD_TASK_RESULT_OK
 import com.teatov.todo.ui.EDIT_TASK_RESULT_OK
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.receiveAsFlow
@@ -29,11 +28,12 @@ class TasksViewModel @ViewModelInject constructor(
     private val tasksEventChannel = Channel<TasksEvent>()
     val tasksEvent = tasksEventChannel.receiveAsFlow()
 
-    private val tasksFlow = combine(searchQuery.asFlow(), preferencesFlow) { query, filterPreferences ->
-        Pair(query, filterPreferences)
-    }.flatMapLatest { (query, filterPreferences) ->
-        taskDao.getTasks(query, filterPreferences.sortOrder, filterPreferences.hideCompleted)
-    }
+    private val tasksFlow =
+        combine(searchQuery.asFlow(), preferencesFlow) { query, filterPreferences ->
+            Pair(query, filterPreferences)
+        }.flatMapLatest { (query, filterPreferences) ->
+            taskDao.getTasks(query, filterPreferences.sortOrder, filterPreferences.hideCompleted)
+        }
 
     val tasks = tasksFlow.asLiveData()
 
@@ -49,7 +49,7 @@ class TasksViewModel @ViewModelInject constructor(
         tasksEventChannel.send(TasksEvent.NavigateToEditTaskScreen(task))
     }
 
-    fun onTaskCheckChanged(task: Task, isChecked:Boolean) = viewModelScope.launch {
+    fun onTaskCheckChanged(task: Task, isChecked: Boolean) = viewModelScope.launch {
         taskDao.update(task.copy(completed = isChecked))
     }
 
@@ -59,7 +59,7 @@ class TasksViewModel @ViewModelInject constructor(
         tasksEventChannel.send(TasksEvent.ShowUndoDeleteTaskMessage(task))
     }
 
-    fun onUndoDeleteClick (task: Task) = viewModelScope.launch {
+    fun onUndoDeleteClick(task: Task) = viewModelScope.launch {
         taskDao.insert(task)
     }
 
@@ -68,13 +68,13 @@ class TasksViewModel @ViewModelInject constructor(
     }
 
     fun onAddEditResult(result: Int) {
-        when(result) {
+        when (result) {
             ADD_TASK_RESULT_OK -> showTaskSavedConfirmationMessage("Task added")
             EDIT_TASK_RESULT_OK -> showTaskSavedConfirmationMessage("Task updated")
         }
     }
 
-    fun showTaskSavedConfirmationMessage(text:String) = viewModelScope.launch {
+    fun showTaskSavedConfirmationMessage(text: String) = viewModelScope.launch {
         tasksEventChannel.send(TasksEvent.ShowTaskSavedConfirmationMessage(text))
     }
 

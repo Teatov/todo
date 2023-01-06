@@ -38,7 +38,7 @@ class AddEditTaskFragment : Fragment(R.layout.fragment_add_edit_task) {
                 viewModel.taskName = it.toString()
             }
 
-            checkBoxImportant.setOnCheckedChangeListener{ _, isChecked ->
+            checkBoxImportant.setOnCheckedChangeListener { _, isChecked ->
                 viewModel.taskImportance = isChecked
             }
 
@@ -49,13 +49,16 @@ class AddEditTaskFragment : Fragment(R.layout.fragment_add_edit_task) {
 
         viewLifecycleOwner.lifecycleScope.launchWhenStarted {
             viewModel.addEditTaskEvent.collect { event ->
-                when(event) {
+                when (event) {
                     is AddEditTaskViewModel.AddEditTaskEvent.ShowInvalidInputMessage -> {
                         Snackbar.make(requireView(), event.msg, Snackbar.LENGTH_LONG).show()
                     }
                     is AddEditTaskViewModel.AddEditTaskEvent.NavigateBackWithResult -> {
                         binding.editTextTaskName.clearFocus()
-                        setFragmentResult("add_edit_request", bundleOf("add_edit_result" to event.result))
+                        setFragmentResult(
+                            "add_edit_request",
+                            bundleOf("add_edit_result" to event.result)
+                        )
                         findNavController().popBackStack()
                     }
                 }.exhaustive

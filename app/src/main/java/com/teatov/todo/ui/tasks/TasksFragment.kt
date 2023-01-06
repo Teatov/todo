@@ -88,16 +88,14 @@ class TasksFragment : Fragment(R.layout.fragment_tasks), TasksAdapter.OnItemClic
                     is TasksViewModel.TasksEvent.NavigateToAddTaskScreen -> {
                         val action =
                             TasksFragmentDirections.actionTasksFragmentToAddEditTaskFragment(
-                                null,
-                                "New task"
+                                null, "New task"
                             )
                         findNavController().navigate(action)
                     }
                     is TasksViewModel.TasksEvent.NavigateToEditTaskScreen -> {
                         val action =
                             TasksFragmentDirections.actionTasksFragmentToAddEditTaskFragment(
-                                event.task,
-                                "Edit task"
+                                event.task, "Edit task"
                             )
                         findNavController().navigate(action)
                     }
@@ -105,7 +103,8 @@ class TasksFragment : Fragment(R.layout.fragment_tasks), TasksAdapter.OnItemClic
                         Snackbar.make(requireView(), event.msg, Snackbar.LENGTH_SHORT).show()
                     }
                     TasksViewModel.TasksEvent.NavigateToDeleteAllCompletedScreen -> {
-                        val action = TasksFragmentDirections.actionGlobalDeleteAllCompletedDialogFragment()
+                        val action =
+                            TasksFragmentDirections.actionGlobalDeleteAllCompletedDialogFragment()
                         findNavController().navigate(action)
                     }
                 }.exhaustive
